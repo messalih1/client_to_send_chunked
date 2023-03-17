@@ -19,11 +19,8 @@
 #define PORT 8081
 using namespace std;
 
-
-
-int main(int argc, char** argv) 
+int main(int ac, char *argv[])
 {
-     
 
     int sock = 0; long valread;
     struct sockaddr_in serv_addr;
@@ -52,22 +49,16 @@ int main(int argc, char** argv)
         return -1;
     }
 
-
-    // send(sock , (void *)(header.data()) , 10000 , 0 );
-   int p = 0;
-
-    int fd = open ("1",O_RDWR);
-    
-    ifstream file("video", ios::binary);
+ 
+     
+    ifstream file("test.jpg", ios::binary);
     int chunk_size_read;
     int size = 1000;
     string chunk_data("\0",size);// use string
-        // data = "";
-        // if(p == 0)
-        // {
-        //     data = "POST / HTTP/1.1\r\nHost: 127.0.0.1:8081\r\nUser-Agent: vscode..\r\nTransfer-Encoding: chunked\r\n\r\n";
-        //     p = 10;
-        // }
+        
+    // string header = "POST / HTTP/1.1\r\nHost: 127.0.0.1:8081\r\nUser-Agent: vscode..\r\nTransfer-Encoding: chunked\r\n\r\n";
+    // send(sock , (void *)(header.data()) , header.size() , 0 );
+ 
     while (!file.eof()) 
     {
         string data = "";
@@ -101,5 +92,5 @@ int main(int argc, char** argv)
     
     }
 
-}
 
+}

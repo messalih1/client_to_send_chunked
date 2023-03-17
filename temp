@@ -1,0 +1,521 @@
+    int sock = 0; long valread;
+    struct sockaddr_in serv_addr;
+     
+    if ((sock = socket(AF_INET, SOCK_STREAM, 0)) < 0)
+    {
+        printf("\n Socket creation error \n");
+        return -1;
+    }
+    
+    memset(&serv_addr, '0', sizeof(serv_addr));
+    
+    serv_addr.sin_family = AF_INET;
+    serv_addr.sin_port = htons(PORT);
+    
+    // Convert IPv4 and IPv6 addresses from text to binary form
+    if(inet_pton(AF_INET, "127.0.0.1", &serv_addr.sin_addr)<=0)
+    {
+        printf("\nInvalid address/ Address not supported \n");
+        return -1;
+    }
+    
+    if (connect(sock, (struct sockaddr *)&serv_addr, sizeof(serv_addr)) < 0)
+    {
+        printf("\nConnection Failed \n");
+        return -1;
+    }
+
+
+    // send(sock , (void *)(header.data()) , 10000 , 0 );
+   int p = 0;
+
+    int fd = open ("1",O_RDWR);
+    
+    ifstream file("video", ios::binary);
+    int chunk_size_read;
+    int size = 1000;
+    string chunk_data("\0",size);// use string
+        // data = "";
+        // if(p == 0)
+        // {
+        //     data = "POST / HTTP/1.1\r\nHost: 127.0.0.1:8081\r\nUser-Agent: vscode..\r\nTransfer-Encoding: chunked\r\n\r\n";
+        //     p = 10;
+        // }
+    while (!file.eof()) 
+    {
+        string data = "";
+        
+        file.read((char*)(chunk_data.data()), size);
+        
+        chunk_size_read = file.gcount();
+        
+        
+        if(chunk_size_read < size)
+        {
+            std::ostringstream ss;
+            ss << std::hex << chunk_size_read;
+            chunk_data.resize(chunk_size_read);
+            
+            std::string result = ss.str();
+            data.append(result).append("\r\n").append(chunk_data).append("\r\n0\r\n\r\n");
+            send(sock , (void *)(data.data()) , data.size() , 0 );
+            // write(fd,(void*)(data.data()),data.size());
+        }
+        else
+        { 
+            std::ostringstream ss;
+            ss << std::hex << chunk_size_read;
+
+            std::string result = ss.str();
+            data.append(result).append("\r\n").append(chunk_data).append("\r\n");
+            // write(fd,(void*)(data.data()),data.size());
+            send(sock , (void *)(data.data()) , data.size() , 0 );
+        }
+    
+    }
+
+
+
+
+    std::fstream file("example.txt", std::ios::out | std::ios::in | std::ios::trunc);
+
+
+
+
+
+
+    string path = argv[1];
+    string path2 = argv[2];
+    string contentType;
+    string header;
+
+    int newFile = open((char*)(path2.data()),O_CREAT , 0777 | O_RDWR);
+
+    if(path.find("jpg"))
+        contentType = "image/jpg";
+    else if(path.find("video"))
+        contentType = "video/mp4";
+    else if(path.find("pdf"))
+        contentType = "application/pdf";
+    else
+        contentType = "application/octet-stream";
+
+    header = "POST / HTTP/1.1\r\nHost: 127.0.0.1:8081\r\nUser-Agent: vscode..\r\n"; 
+    header.append("Content-Type: ").append(contentType).append("\r\n").append("Transfer-Encoding: chunked\r\n\r\n");
+    
+    write(newFile,(void*)(header.data()),header.size());
+
+    
+    ifstream file((char*)(path.data()), ios::binary); // i used because has option to read all content
+
+    file.seekg(0, std::ios::end);
+    const std::streamsize file_size = file.tellg();
+    file.seekg(0, std::ios::beg);
+    
+    
+    char* buffer = new char[file_size];
+    
+    file.read(buffer, file_size);
+    file.
+    write(newFile,buffer,file_size);
+
+
+    int sock = 0; long valread;
+    struct sockaddr_in serv_addr;
+     
+    if ((sock = socket(AF_INET, SOCK_STREAM, 0)) < 0)
+    {
+        printf("\n Socket creation error \n");
+        return -1;
+    }
+    
+    memset(&serv_addr, '0', sizeof(serv_addr));
+    
+    serv_addr.sin_family = AF_INET;
+    serv_addr.sin_port = htons(PORT);
+    
+    // Convert IPv4 and IPv6 addresses from text to binary form
+    if(inet_pton(AF_INET, "127.0.0.1", &serv_addr.sin_addr)<=0)
+    {
+        printf("\nInvalid address/ Address not supported \n");
+        return -1;
+    }
+    
+    if (connect(sock, (struct sockaddr *)&serv_addr, sizeof(serv_addr)) < 0)
+    {
+        printf("\nConnection Failed \n");
+        return -1;
+    }
+    delete[] buffer;
+    buffer = new char[file_size];
+    read(newFile,buffer,300);
+    
+    int p = 0;
+
+    int fd = open ("1",O_RDWR);
+    
+    ifstream file("video", ios::binary);
+    int chunk_size_read;
+    int size = 1000;
+    string chunk_data("\0",size);// use string
+        // data = "";
+        // if(p == 0)
+        // {
+        //     data = "POST / HTTP/1.1\r\nHost: 127.0.0.1:8081\r\nUser-Agent: vscode..\r\nTransfer-Encoding: chunked\r\n\r\n";
+        //     p = 10;
+        // }
+    while (!file.eof()) 
+    {
+        string data = "";
+        
+        file.read((char*)(chunk_data.data()), size);
+        
+        chunk_size_read = file.gcount();
+        
+        
+        if(chunk_size_read < size)
+        {
+            std::ostringstream ss;
+            ss << std::hex << chunk_size_read;
+            chunk_data.resize(chunk_size_read);
+            
+            std::string result = ss.str();
+            data.append(result).append("\r\n").append(chunk_data).append("\r\n0\r\n\r\n");
+            send(sock , (void *)(data.data()) , data.size() , 0 );
+            // write(fd,(void*)(data.data()),data.size());
+        }
+        else
+        { 
+            std::ostringstream ss;
+            ss << std::hex << chunk_size_read;
+
+            std::string result = ss.str();
+            data.append(result).append("\r\n").append(chunk_data).append("\r\n");
+            // write(fd,(void*)(data.data()),data.size());
+            send(sock , (void *)(data.data()) , data.size() , 0 );
+        }
+    
+    }
+
+
+
+
+
+
+
+
+
+// int main(int argc, char** argv) 
+// {
+//     // string path1 = argv[1];
+//     // string path2 = argv[2];
+//     // string contentType;
+//     // string header;
+    
+//     // std::fstream dataFile(path1, std::ios::out | std::ios::in); // fstream for write and read files
+//     // std::fstream newFile(path2, std::ios::out | std::ios::in );
+
+
+
+//     // if(path1.find("jpg"))
+//     //     contentType = "image/jpg";
+//     // else if(path1.find("video"))
+//     //     contentType = "video/mp4";
+//     // else if(path1.find("pdf"))
+//     //     contentType = "application/pdf";
+//     // else
+//     //     contentType = "application/octet-stream";
+
+//     // header = "POST / HTTP/1.1\r\nHost: 127.0.0.1:8081\r\nUser-Agent: vscode..\r\n"; 
+//     // header.append("Content-Type: ").append(contentType).append("\r\n").append("Transfer-Encoding: chunked\r\n\r\n");
+
+ 
+//     // dataFile.seekg(0, std::ios::end);
+//     // const std::streamsize file_size = dataFile.tellg();
+//     // dataFile.seekg(0, std::ios::beg);
+
+    
+//     // char* buffer = new char[file_size];
+    
+//     // dataFile.read(buffer, file_size);
+
+//     // // newFile.write(header.data(),header.size());
+//     // newFile.write(buffer,file_size);
+
+//     // int p = 0;
+
+//     // int fd = open ("1",O_RDWR);
+    
+     
+//     // int chunk_size_read;
+//     // int size = 1000;
+//     // string chunk_data("\0",size);
+ 
+//     // int sock = 0; long valread;
+//     // struct sockaddr_in serv_addr;
+     
+//     // if ((sock = socket(AF_INET, SOCK_STREAM, 0)) < 0)
+//     // {
+//     //     printf("\n Socket creation error \n");
+//     //     return -1;
+//     // }
+    
+//     // memset(&serv_addr, '0', sizeof(serv_addr));
+    
+//     // serv_addr.sin_family = AF_INET;
+//     // serv_addr.sin_port = htons(PORT);
+    
+//     // // Convert IPv4 and IPv6 addresses from text to binary form
+//     // if(inet_pton(AF_INET, "127.0.0.1", &serv_addr.sin_addr)<=0)
+//     // {
+//     //     printf("\nInvalid address/ Address not supported \n");
+//     //     return -1;
+//     // }
+    
+//     // if (connect(sock, (struct sockaddr *)&serv_addr, sizeof(serv_addr)) < 0)
+//     // {
+//     //     printf("\nConnection Failed \n");
+//     //     return -1;
+//     // }
+
+//     // while (!newFile.eof()) 
+//     // {
+//     //     string data = "";
+        
+//     //     newFile.read((char*)(chunk_data.data()), size);
+        
+//     //     chunk_size_read = newFile.gcount();
+        
+        
+//     //     if(chunk_size_read < size)
+//     //     {
+//     //         std::ostringstream ss;
+//     //         ss << std::hex << chunk_size_read;
+//     //         chunk_data.resize(chunk_size_read);
+            
+//     //         std::string result = ss.str();
+//     //         data.append(result).append("\r\n").append(chunk_data).append("\r\n0\r\n\r\n");
+//     //         send(sock , (void *)(data.data()) , data.size() , 0 );
+//     //         // write(fd,(void*)(data.data()),data.size());
+//     //     }
+//     //     else
+//     //     { 
+//     //         std::ostringstream ss;
+//     //         ss << std::hex << chunk_size_read;
+
+//     //         std::string result = ss.str();
+//     //         data.append(result).append("\r\n").append(chunk_data).append("\r\n");
+//     //         // write(fd,(void*)(data.data()),data.size());
+//     //         send(sock , (void *)(data.data()) , data.size() , 0 );
+//     //     }
+    
+//     // }
+
+//     int sock = 0; long valread;
+//     struct sockaddr_in serv_addr;
+     
+//     if ((sock = socket(AF_INET, SOCK_STREAM, 0)) < 0)
+//     {
+//         printf("\n Socket creation error \n");
+//         return -1;
+//     }
+    
+//     memset(&serv_addr, '0', sizeof(serv_addr));
+    
+//     serv_addr.sin_family = AF_INET;
+//     serv_addr.sin_port = htons(PORT);
+    
+//     // Convert IPv4 and IPv6 addresses from text to binary form
+//     if(inet_pton(AF_INET, "127.0.0.1", &serv_addr.sin_addr)<=0)
+//     {
+//         printf("\nInvalid address/ Address not supported \n");
+//         return -1;
+//     }
+    
+//     if (connect(sock, (struct sockaddr *)&serv_addr, sizeof(serv_addr)) < 0)
+//     {
+//         printf("\nConnection Failed \n");
+//         return -1;
+//     }
+
+
+//     // send(sock , (void *)(header.data()) , 10000 , 0 );
+//    int p = 0;
+
+//     int fd = open ("1",O_RDWR);
+    
+  
+
+// }
+
+
+#include <curl/curl.h>
+#include <iostream>
+#include <string>
+
+int main() {
+    CURL *curl = curl_easy_init();
+    if (curl) {
+        // Set the URL to send the request to
+        curl_easy_setopt(curl, CURLOPT_URL, "127.0.0.1:8081");
+
+        // Set the headers
+        struct curl_slist *headers = NULL;
+        headers = curl_slist_append(headers, "Content-Type: application/json");
+        headers = curl_slist_append(headers, "Authorization: Bearer my_token");
+        curl_easy_setopt(curl, CURLOPT_HTTPHEADER, headers);
+
+        ifstream file("test.jpg", ios::binary);
+        int chunk_size_read;
+        int size = 1000;
+        string chunk_data("\0",size);// use string
+                
+        while (!file.eof()) 
+        {
+            
+            string data = "";
+            file.read((char*)(chunk_data.data()), size);
+            
+            chunk_size_read = file.gcount();
+            
+            
+            if(chunk_size_read < size)
+            {
+                std::ostringstream ss;
+                ss << std::hex << chunk_size_read;
+                chunk_data.resize(chunk_size_read);
+                
+                std::string result = ss.str();
+                data.append(result).append("\r\n").append(chunk_data).append("\r\n0\r\n\r\n");
+                // std::string json_data = "{\"name\":\"John Doe\",\"email\":\"johndoe@example.com\"}";
+
+                curl_easy_setopt(curl, CURLOPT_POSTFIELDS, data.c_str());
+
+                // Perform the request
+                CURLcode result = curl_easy_perform(curl);
+
+                
+
+                // Clean up
+                curl_slist_free_all(headers);
+                curl_easy_cleanup(curl);
+                // send(sock , (void *)(data.data()) , data.size() , 0 );
+                // write(fd,(void*)(data.data()),data.size());
+            }
+            else
+            { 
+                std::ostringstream ss;
+                ss << std::hex << chunk_size_read;
+
+                std::string result = ss.str();
+                data.append(result).append("\r\n").append(chunk_data).append("\r\n");
+                std::ostringstream ss;
+                ss << std::hex << chunk_size_read;
+                chunk_data.resize(chunk_size_read);
+                
+                std::string result = ss.str();
+                data.append(result).append("\r\n").append(chunk_data).append("\r\n0\r\n\r\n");
+                // std::string json_data = "{\"name\":\"John Doe\",\"email\":\"johndoe@example.com\"}";
+
+                curl_easy_setopt(curl, CURLOPT_POSTFIELDS, data.c_str());
+
+                // Perform the request
+                CURLcode result = curl_easy_perform(curl);
+
+                
+
+                // Clean up
+                curl_slist_free_all(headers);
+                curl_easy_cleanup(curl);
+                // write(fd,(void*)(data.data()),data.size());
+                // send(sock , (void *)(data.data()) , data.size() , 0 );
+            }
+        
+        }
+ 
+        
+    } else {
+        std::cerr << "Error initializing cURL." << std::endl;
+    }
+
+    return 0;
+}
+
+
+
+
+
+
+
+
+
+    CURL *curl = curl_easy_init();
+    if (curl) {
+        // Set the URL to send the request to
+        curl_easy_setopt(curl, CURLOPT_URL, "127.0.0.1:8081");
+
+        // Set the headers
+        struct curl_slist *headers = NULL;
+        headers = curl_slist_append(headers, "Content-Type: application/json");
+        headers = curl_slist_append(headers, "Authorization: Bearer my_token");
+        curl_easy_setopt(curl, CURLOPT_HTTPHEADER, headers);
+
+        ifstream file("test.jpg", ios::binary);
+        int chunk_size_read;
+        int size = 1000;
+        string chunk_data("\0",size);// use string
+           
+
+        while (!file.eof()) 
+        {
+            file.read((char*)(chunk_data.data()), size);
+            
+            chunk_size_read = file.gcount();
+            
+            string data = "";
+            if(chunk_size_read < size)
+            {
+                std::ostringstream ss;
+                ss << std::hex << chunk_size_read;
+                chunk_data.resize(chunk_size_read);
+                
+                std::string result = ss.str();
+                data.append(result).append("\r\n").append(chunk_data).append("\r\n0\r\n\r\n");
+                curl_easy_setopt(curl, CURLOPT_POSTFIELDS, data.c_str());
+                // send(sock , (void *)(data.data()) , data.size() , 0 );
+                // write(fd,(void*)(data.data()),data.size());
+            }
+            else
+            { 
+                std::ostringstream ss;
+                ss << std::hex << chunk_size_read;
+
+                std::string result = ss.str();
+                 
+                data.append(result).append("\r\n").append(chunk_data).append("\r\n");
+              
+                curl_easy_setopt(curl, CURLOPT_POSTFIELDS, data.c_str());
+ 
+            }
+            CURLcode result = curl_easy_perform(curl);
+
+        // Check for errors
+        if (result != CURLE_OK) {
+            std::cerr << "Error performing HTTP request: " << curl_easy_strerror(result) << std::endl;
+        }
+
+        // Clean up
+        curl_slist_free_all(headers);
+        curl_easy_cleanup(curl);
+        }
+ 
+        // Perform the request
+        CURLcode result = curl_easy_perform(curl);
+
+      
+        // Clean up
+        curl_slist_free_all(headers);
+        curl_easy_cleanup(curl);
+    } else {
+        std::cerr << "Error initializing cURL." << std::endl;
+    }
