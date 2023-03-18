@@ -21,7 +21,35 @@ using namespace std;
 
 int main(int ac, char *argv[])
 {
+    string path = argv[1];
+    string contentType;
+    string header;
+    
+    int flag = 0;
+    int f =  path.find("jpg");
+    if(f != -1)
+    {
+        contentType = "image/jpg";
+        flag = 10;
+    }
+    f =  path.find("video");
+    if(f != -1 && flag == 0)
+    {
+        contentType = "video/mp4";
+        flag = 10;
+    }
+    f = path.find("pdf");
+    if(f != -1 && flag == 0)
+    {
+        contentType = "application/pdf";
+        flag = 10;
+    }
+    if(flag == 0)
+        contentType = "application/octet-stream";
 
+    header = "POST / HTTP/1.1\r\nHost: 127.0.0.1:8081\r\nUser-Agent: vscode..\r\n"; 
+    header.append("Content-Type: ").append(contentType).append("\r\n").append("Transfer-Encoding: chunked\r\n\r\n");
+   
     int sock = 0; long valread;
     struct sockaddr_in serv_addr;
      
@@ -49,15 +77,13 @@ int main(int ac, char *argv[])
         return -1;
     }
 
- 
      
-    ifstream file("test.jpg", ios::binary);
+    ifstream file(path, ios::binary);
     int chunk_size_read;
     int size = 1000;
     string chunk_data("\0",size);// use string
-        
-    // string header = "POST / HTTP/1.1\r\nHost: 127.0.0.1:8081\r\nUser-Agent: vscode..\r\nTransfer-Encoding: chunked\r\n\r\n";
-    // send(sock , (void *)(header.data()) , header.size() , 0 );
+
+    send(sock , (void *)(header.data()) , header.size() , 0 );
  
     while (!file.eof()) 
     {
@@ -66,7 +92,6 @@ int main(int ac, char *argv[])
         file.read((char*)(chunk_data.data()), size);
         
         chunk_size_read = file.gcount();
-        
         
         if(chunk_size_read < size)
         {
@@ -86,7 +111,6 @@ int main(int ac, char *argv[])
 
             std::string result = ss.str();
             data.append(result).append("\r\n").append(chunk_data).append("\r\n");
-            // write(fd,(void*)(data.data()),data.size());
             send(sock , (void *)(data.data()) , data.size() , 0 );
         }
     
